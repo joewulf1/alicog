@@ -85,9 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               return Center(child: Loading());
                             } else {
                               return ListView.builder(
-                                  itemExtent: 80.0,
                                   itemCount: snapshot.data?.docs.length,
-                                  itemBuilder: (context, index) => baseCard(
+                                  itemBuilder: (context, index) => itemTask(
                                       context, snapshot.data!.docs[index]));
                             }
                           }),
@@ -118,9 +117,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               return Center(child: Loading());
                             } else {
                               return ListView.builder(
-                                  itemExtent: 80.0,
                                   itemCount: snapshot.data?.docs.length,
-                                  itemBuilder: (context, index) => baseCard(
+                                  itemBuilder: (context, index) => itemNote(
                                       context, snapshot.data!.docs[index]));
                             }
                           }),
@@ -134,45 +132,64 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Widget baseCard(BuildContext context, DocumentSnapshot document) {
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Card(
-        child: InkWell(
-      splashColor: Colors.blue.withAlpha(30),
-      child: SizedBox(
-        height: 100,
-        width: double.infinity,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(child: Text(document["Title"])),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              // child: FloatingActionButton.small(
-              //     heroTag: document.id,
-              //     child: const Icon(Icons.delete, color: Colors.white),
-              //     onPressed: () {
-              //       Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //             builder: (context) =>
-              //                 youSure(context, document, document.id)),
-              //       );
-              //     }),
-            ),
-          ],
+Widget itemNote(BuildContext context, DocumentSnapshot document) {
+  return Stack(children: [
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+          child: ExpansionTile(title: Text(document["Title"]), children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            child: Center(child: Text(document["Content"])),
+          ),
         ),
-      ),
-      onTap: () {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) => collectionPage(choiceID: document.id)),
-        // );
-      },
-    )),
-  );
+      ])),
+    ),
+  ]);
+}
+
+Widget itemTask(BuildContext context, DocumentSnapshot document) {
+  String urgentMessage = "";
+  String isUrgent() {
+    if (document["Urgent"] == true) {
+      urgentMessage = "This is urgent!";
+      return urgentMessage;
+    } else {
+      urgentMessage = "This is not urgent.";
+      return urgentMessage;
+    }
+  }
+
+  //String test = document["Date Occuring"];
+  return Stack(children: [
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+          child: ExpansionTile(title: Text(document["Title"]), children: [
+        SizedBox(
+          child: Center(
+              child: Column(
+            children: [
+              //Text(document[test]),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(document["Content"]),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Text(isUrgent()),
+                  ],
+                ),
+              ),
+            ],
+          )),
+        ),
+      ])),
+    ),
+  ]);
 }
 
 class Loading extends StatelessWidget {
