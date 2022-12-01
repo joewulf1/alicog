@@ -195,7 +195,7 @@ Widget itemNote(BuildContext context, DocumentSnapshot document) {
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: FloatingActionButton.small(
-                          heroTag: "itemDeletion",
+                          heroTag: "noteDeletion",
                           child: const Icon(Icons.delete, color: Colors.white),
                           onPressed: () {
                             delItem(document.id);
@@ -271,7 +271,7 @@ Widget itemTask(BuildContext context, DocumentSnapshot document) {
                           child: Padding(
                             padding: const EdgeInsets.all(4.0),
                             child: FloatingActionButton.small(
-                                heroTag: "itemDeletion",
+                                heroTag: "taskDeletion",
                                 child: const Icon(Icons.delete,
                                     color: Colors.white),
                                 onPressed: () {
@@ -326,97 +326,102 @@ class _addNoteState extends State<addNote> {
   TextEditingController noteTitle = TextEditingController();
   TextEditingController noteContent = TextEditingController();
   Widget build(BuildContext context) {
+    var screen = MediaQuery.of(context).size;
     return AlertDialog(
+      insetPadding: EdgeInsets.all(100),
       title: const Text('Add Note'),
-      content: Stack(children: <Widget>[
-        Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(noteTitle.text)
-                          .set({"Title": noteTitle.text});
-                    }
-                  },
-                  controller: noteTitle,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a title';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Title of Note',
+      content: SizedBox(
+        width: screen.width * .5,
+        child: Stack(children: <Widget>[
+          Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(noteTitle.text)
+                            .set({"Title": noteTitle.text});
+                      }
+                    },
+                    controller: noteTitle,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Title of Note',
+                    ),
                   ),
-                ),
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(noteTitle.text)
-                          .set({"Content": noteContent.text});
-                    }
-                  },
-                  controller: noteContent,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a some text';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Content of Note',
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(noteTitle.text)
+                            .set({"Content": noteContent.text});
+                      }
+                    },
+                    controller: noteContent,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a some text';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Content of Note',
+                    ),
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(noteTitle.text)
+                            .set({
+                          "Title": noteTitle.text,
+                          "Content": noteContent.text,
+                          "isNote?": true
+                        });
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ],
+              )),
+          Positioned(
+            right: 0.0,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: const Align(
+                alignment: Alignment.topRight,
+                child: CircleAvatar(
+                  radius: 14.0,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.close, color: Colors.red),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(noteTitle.text)
-                          .set({
-                        "Title": noteTitle.text,
-                        "Content": noteContent.text,
-                        "isNote?": true
-                      });
-                    }
-                  },
-                  child: const Text('Submit'),
-                ),
-              ],
-            )),
-        Positioned(
-          right: 0.0,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: const Align(
-              alignment: Alignment.topRight,
-              child: CircleAvatar(
-                radius: 14.0,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.close, color: Colors.red),
               ),
             ),
           ),
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 }
@@ -431,123 +436,128 @@ class _addTaskState extends State<addTask> {
   TextEditingController taskTitle = TextEditingController();
   TextEditingController taskContent = TextEditingController();
   TextEditingController taskUrgent = TextEditingController();
+
   Widget build(BuildContext context) {
+    var screen = MediaQuery.of(context).size;
     return AlertDialog(
       title: const Text('Add Note'),
-      content: Stack(children: <Widget>[
-        Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(taskTitle.text)
-                          .set({"Title": taskTitle.text});
-                    }
-                  },
-                  controller: taskTitle,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a title';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Title of Task',
+      content: SizedBox(
+        width: screen.width * .5,
+        child: Stack(children: <Widget>[
+          Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(taskTitle.text)
+                            .set({"Title": taskTitle.text});
+                      }
+                    },
+                    controller: taskTitle,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Title of Task',
+                    ),
                   ),
-                ),
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(taskTitle.text)
-                          .set({"Content": taskContent.text});
-                    }
-                  },
-                  controller: taskContent,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a some text';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Content of Task',
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(taskTitle.text)
+                            .set({"Content": taskContent.text});
+                      }
+                    },
+                    controller: taskContent,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a some text';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      labelText: 'Content of Task',
+                    ),
                   ),
-                ),
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(taskTitle.text)
-                          .set({"Urgent": taskUrgent.text});
-                    }
-                  },
-                  controller: taskUrgent,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter true or false';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    labelText:
-                        'Is the task urgent? (Please enter true or false)',
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(taskTitle.text)
+                            .set({"Urgent": taskUrgent.text});
+                      }
+                    },
+                    controller: taskUrgent,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter true or false';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      labelText:
+                          'Is the task urgent? (Please enter true or false)',
+                    ),
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(taskTitle.text)
+                            .set({
+                          "Urgent": taskUrgent.text,
+                          "Title": taskTitle.text,
+                          "Content": taskContent.text,
+                          "isNote?": false
+                        });
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ],
+              )),
+          Positioned(
+            right: 0.0,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: const Align(
+                alignment: Alignment.topRight,
+                child: CircleAvatar(
+                  radius: 14.0,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.close, color: Colors.red),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(taskTitle.text)
-                          .set({
-                        "Urgent": taskUrgent.text,
-                        "Title": taskTitle.text,
-                        "Content": taskContent.text,
-                        "isNote?": false
-                      });
-                    }
-                  },
-                  child: const Text('Submit'),
-                ),
-              ],
-            )),
-        Positioned(
-          right: 0.0,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: const Align(
-              alignment: Alignment.topRight,
-              child: CircleAvatar(
-                radius: 14.0,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.close, color: Colors.red),
               ),
             ),
           ),
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 }
@@ -576,97 +586,99 @@ class _updateNoteState extends State<updateNote> {
   TextEditingController noteContent = TextEditingController();
 
   Widget build(BuildContext context) {
-    print("below");
-    print(title);
+    var screen = MediaQuery.of(context).size;
     return AlertDialog(
       title: const Text('Change Note'),
-      content: Stack(children: <Widget>[
-        Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(noteTitle.text)
-                          .set({"Title": noteTitle.text});
-                    }
-                  },
-                  controller: noteTitle,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a title';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      labelText: 'Title of Note', hintText: title),
+      content: SizedBox(
+        width: screen.width * .5,
+        child: Stack(children: <Widget>[
+          Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(noteTitle.text)
+                            .set({"Title": noteTitle.text});
+                      }
+                    },
+                    controller: noteTitle,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Title of Note', hintText: title),
+                  ),
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(noteTitle.text)
+                            .set({"Content": noteContent.text});
+                      }
+                    },
+                    controller: noteContent,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a some text';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Content of Note', hintText: content),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(noteTitle.text)
+                            .set({
+                          "Title": noteTitle.text,
+                          "Content": noteContent.text,
+                          "isNote?": true
+                        });
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ],
+              )),
+          Positioned(
+            right: 0.0,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: const Align(
+                alignment: Alignment.topRight,
+                child: CircleAvatar(
+                  radius: 14.0,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.close, color: Colors.red),
                 ),
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(noteTitle.text)
-                          .set({"Content": noteContent.text});
-                    }
-                  },
-                  controller: noteContent,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a some text';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      labelText: 'Content of Note', hintText: content),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(noteTitle.text)
-                          .set({
-                        "Title": noteTitle.text,
-                        "Content": noteContent.text,
-                        "isNote?": true
-                      });
-                    }
-                  },
-                  child: const Text('Submit'),
-                ),
-              ],
-            )),
-        Positioned(
-          right: 0.0,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: const Align(
-              alignment: Alignment.topRight,
-              child: CircleAvatar(
-                radius: 14.0,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.close, color: Colors.red),
               ),
             ),
           ),
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 }
@@ -697,120 +709,125 @@ class _updateTaskState extends State<updateTask> {
   TextEditingController taskContent = TextEditingController();
   TextEditingController taskUrgent = TextEditingController();
   Widget build(BuildContext context) {
+    var screen = MediaQuery.of(context).size;
+
     return AlertDialog(
       title: const Text('Add Note'),
-      content: Stack(children: <Widget>[
-        Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(taskTitle.text)
-                          .set({"Title": taskTitle.text});
-                    }
-                  },
-                  controller: taskTitle,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a title';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      labelText: 'Title of Task', hintText: title),
+      content: SizedBox(
+        width: screen.width * .5,
+        child: Stack(children: <Widget>[
+          Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(taskTitle.text)
+                            .set({"Title": taskTitle.text});
+                      }
+                    },
+                    controller: taskTitle,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Title of Task', hintText: title),
+                  ),
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(taskTitle.text)
+                            .set({"Content": taskContent.text});
+                      }
+                    },
+                    controller: taskContent,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a some text';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        labelText: 'Content of Task', hintText: content),
+                  ),
+                  TextFormField(
+                    onFieldSubmitted: (value) {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(taskTitle.text)
+                            .set({"Urgent": taskUrgent.text});
+                      }
+                    },
+                    controller: taskUrgent,
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter true or false';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                        labelText:
+                            'Is the task urgent? (Please enter true or false)',
+                        hintText: urgent),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (formKey.currentState!.validate()) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(taskTitle.text)
+                            .set({
+                          "Urgent": taskUrgent.text,
+                          "Title": taskTitle.text,
+                          "Content": taskContent.text,
+                          "isNote?": false
+                        });
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ],
+              )),
+          Positioned(
+            right: 0.0,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: const Align(
+                alignment: Alignment.topRight,
+                child: CircleAvatar(
+                  radius: 14.0,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.close, color: Colors.red),
                 ),
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(taskTitle.text)
-                          .set({"Content": taskContent.text});
-                    }
-                  },
-                  controller: taskContent,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a some text';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      labelText: 'Content of Task', hintText: content),
-                ),
-                TextFormField(
-                  onFieldSubmitted: (value) {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(taskTitle.text)
-                          .set({"Urgent": taskUrgent.text});
-                    }
-                  },
-                  controller: taskUrgent,
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter true or false';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      labelText:
-                          'Is the task urgent? (Please enter true or false)',
-                      hintText: urgent),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    if (formKey.currentState!.validate()) {
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc('9QEH87DWCydbWuV2jpML')
-                          .collection("Content")
-                          .doc(taskTitle.text)
-                          .set({
-                        "Urgent": taskUrgent.text,
-                        "Title": taskTitle.text,
-                        "Content": taskContent.text,
-                        "isNote?": false
-                      });
-                    }
-                  },
-                  child: const Text('Submit'),
-                ),
-              ],
-            )),
-        Positioned(
-          right: 0.0,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-            },
-            child: const Align(
-              alignment: Alignment.topRight,
-              child: CircleAvatar(
-                radius: 14.0,
-                backgroundColor: Colors.white,
-                child: Icon(Icons.close, color: Colors.red),
               ),
             ),
           ),
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 }
