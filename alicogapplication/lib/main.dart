@@ -58,7 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: widthScreen * .33,
                     height: heightScreen * .80,
                     child: DecoratedBox(
-                        decoration: BoxDecoration(color: Colors.green)),
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 175, 76, 76))),
                   ),
                 ],
               ),
@@ -176,7 +177,7 @@ Widget itemNote(BuildContext context, DocumentSnapshot document) {
                     child: Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: FloatingActionButton.small(
-                          heroTag: "noteUpdate",
+                          heroTag: document["Title"],
                           child: const Icon(Icons.update, color: Colors.white),
                           onPressed: () {
                             Navigator.push(
