@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Alicog',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
@@ -250,7 +250,7 @@ Widget itemTask(BuildContext context, DocumentSnapshot document) {
                           child: Padding(
                             padding: const EdgeInsets.all(4.0),
                             child: FloatingActionButton.small(
-                                heroTag: "taskUpdate",
+                                heroTag: document.id,
                                 child: const Icon(Icons.update,
                                     color: Colors.white),
                                 onPressed: () {
@@ -339,17 +339,6 @@ class _addNoteState extends State<addNote> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(noteTitle.text)
-                            .set({"Title": noteTitle.text});
-                      }
-                    },
                     controller: noteTitle,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
@@ -362,17 +351,6 @@ class _addNoteState extends State<addNote> {
                     ),
                   ),
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(noteTitle.text)
-                            .set({"Content": noteContent.text});
-                      }
-                    },
                     controller: noteContent,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
@@ -450,17 +428,6 @@ class _addTaskState extends State<addTask> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(taskTitle.text)
-                            .set({"Title": taskTitle.text});
-                      }
-                    },
                     controller: taskTitle,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
@@ -473,17 +440,6 @@ class _addTaskState extends State<addTask> {
                     ),
                   ),
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(taskTitle.text)
-                            .set({"Content": taskContent.text});
-                      }
-                    },
                     controller: taskContent,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
@@ -496,17 +452,6 @@ class _addTaskState extends State<addTask> {
                     ),
                   ),
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(taskTitle.text)
-                            .set({"Urgent": taskUrgent.text});
-                      }
-                    },
                     controller: taskUrgent,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
@@ -598,17 +543,6 @@ class _updateNoteState extends State<updateNote> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(noteTitle.text)
-                            .set({"Title": noteTitle.text});
-                      }
-                    },
                     controller: noteTitle,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
@@ -620,17 +554,6 @@ class _updateNoteState extends State<updateNote> {
                         labelText: 'Title of Note', hintText: title),
                   ),
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(noteTitle.text)
-                            .set({"Content": noteContent.text});
-                      }
-                    },
                     controller: noteContent,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
@@ -644,12 +567,35 @@ class _updateNoteState extends State<updateNote> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
+                      if ((noteTitle.text).isEmpty) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(choiceID)
+                            .set({
+                          "Title": title,
+                          "Content": noteContent.text,
+                          "isNote?": true
+                        });
+                      } else if ((noteContent.text).isEmpty) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(choiceID)
+                            .set({
+                          "Title": noteTitle.text,
+                          "Content": content,
+                          "isNote?": true
+                        });
+                      }
                       if (formKey.currentState!.validate()) {
                         FirebaseFirestore.instance
                             .collection("Users")
                             .doc('9QEH87DWCydbWuV2jpML')
                             .collection("Content")
-                            .doc(noteTitle.text)
+                            .doc(choiceID)
                             .set({
                           "Title": noteTitle.text,
                           "Content": noteContent.text,
@@ -722,65 +668,32 @@ class _updateTaskState extends State<updateTask> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(taskTitle.text)
-                            .set({"Title": taskTitle.text});
-                      }
-                    },
-                    controller: taskTitle,
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a title';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                        labelText: 'Title of Task', hintText: title),
-                  ),
-                  TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(taskTitle.text)
-                            .set({"Content": taskContent.text});
-                      }
-                    },
-                    controller: taskContent,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a some text';
                       }
                       return null;
                     },
+                    controller: taskTitle,
+                    decoration: InputDecoration(
+                        labelText: 'Title of Task', hintText: title),
+                  ),
+                  TextFormField(
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a some text';
+                      }
+                      return null;
+                    },
+                    controller: taskContent,
                     decoration: InputDecoration(
                         labelText: 'Content of Task', hintText: content),
                   ),
                   TextFormField(
-                    onFieldSubmitted: (value) {
-                      Navigator.of(context).pop();
-                      if (formKey.currentState!.validate()) {
-                        FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .doc(taskTitle.text)
-                            .set({"Urgent": taskUrgent.text});
-                      }
-                    },
                     controller: taskUrgent,
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter true or false';
+                        return 'Please enter a some text';
                       }
                       return null;
                     },
@@ -792,12 +705,88 @@ class _updateTaskState extends State<updateTask> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
+                      if ((taskUrgent.text).isEmpty) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(choiceID)
+                            .set({
+                          "Urgent": urgent,
+                          "Title": taskTitle.text,
+                          "Content": taskContent.text,
+                          "isNote?": false
+                        });
+                      } else if ((taskTitle.text).isEmpty) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(choiceID)
+                            .set({
+                          "Urgent": taskUrgent.text,
+                          "Title": title,
+                          "Content": taskContent.text,
+                          "isNote?": false
+                        });
+                      } else if ((taskContent.text).isEmpty) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(choiceID)
+                            .set({
+                          "Urgent": taskUrgent.text,
+                          "Title": taskTitle.text,
+                          "Content": content,
+                          "isNote?": false
+                        });
+                      } else if ((taskContent.text).isEmpty &&
+                          (taskTitle.text).isEmpty) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(choiceID)
+                            .set({
+                          "Urgent": taskUrgent.text,
+                          "Title": title,
+                          "Content": content,
+                          "isNote?": false
+                        });
+                      } else if ((taskContent.text).isEmpty &&
+                          (taskUrgent.text).isEmpty) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(choiceID)
+                            .set({
+                          "Urgent": urgent,
+                          "Title": taskTitle.text,
+                          "Content": content,
+                          "isNote?": false
+                        });
+                      } else if ((taskUrgent.text).isEmpty &&
+                          (taskTitle.text).isEmpty) {
+                        FirebaseFirestore.instance
+                            .collection("Users")
+                            .doc('9QEH87DWCydbWuV2jpML')
+                            .collection("Content")
+                            .doc(choiceID)
+                            .set({
+                          "Urgent": taskUrgent.text,
+                          "Title": title,
+                          "Content": content,
+                          "isNote?": false
+                        });
+                      }
                       if (formKey.currentState!.validate()) {
                         FirebaseFirestore.instance
                             .collection("Users")
                             .doc('9QEH87DWCydbWuV2jpML')
                             .collection("Content")
-                            .doc(taskTitle.text)
+                            .doc(choiceID)
                             .set({
                           "Urgent": taskUrgent.text,
                           "Title": taskTitle.text,
