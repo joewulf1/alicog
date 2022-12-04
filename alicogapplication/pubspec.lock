@@ -681,26 +681,26 @@ packages:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_calendar
-      sha256: "7528b2c4231952ded395ffdc80496113103ab8cea2b1e15f266f437e9c326c9d"
+      sha256: "92222782241c32dbe1ad166afd785deac84109a60d535eb6ad87b14ebcf5e2db"
       url: "https://pub.dev"
     source: hosted
-    version: "20.3.57"
+    version: "20.3.59"
   syncfusion_flutter_core:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "0c051d9f525212d8f5631c51271c2831c007a077eac84815ae8d115eb7904b4d"
+      sha256: c38cb76853bb6f0f77cc5b1318f602bb2acbd71196053696c2b27c0b95e20641
       url: "https://pub.dev"
     source: hosted
-    version: "20.3.57"
+    version: "20.3.59"
   syncfusion_flutter_datepicker:
     dependency: transitive
     description:
       name: syncfusion_flutter_datepicker
-      sha256: "4dcaebc45995439cc3cbd6bd912b73c423179277a70fa8b863091c71f1484143"
+      sha256: a239a4b8ceda8f42e02c87cc267f72fcadf73b4d6f5318d4a7a4380844f598e0
       url: "https://pub.dev"
     source: hosted
-    version: "20.3.57"
+    version: "20.3.59"
   table_calendar:
     dependency: "direct main"
     description:
