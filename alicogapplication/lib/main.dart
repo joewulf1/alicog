@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: heightScreen * .80,
                     child: DecoratedBox(
                         decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 175, 76, 76))),
+                            color: Color.fromARGB(255, 68, 34, 161))),
                   ),
                 ],
               ),
