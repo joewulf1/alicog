@@ -237,37 +237,31 @@ class Meeting {
   /// IsAllDay which is equivalent to isAllDay property of [Appointment].
   bool isAllDay;
 }
-// Future<void> getDataFromFireStore() async {
-//   var snapShotsValue = await FirebaseFirestore.instance
-//       .collection("Users")
-//       .doc("9QEH87DWCydbWuV2jpML")
-//       .collection("Content")
-//       .where("scheduled", isEqualTo: true)
-//       .get();
-
-//   List<Meeting> list = snapShotsValue.docs
-//       .map((e) => Meeting(
-//           eventName: e.data()['Subject'],
-//           from: DateFormat('dd/MM/yyyy HH:mm:ss').parse(e.data()['StartTime']),
-//           to: DateFormat('dd/MM/yyyy HH:mm:ss').parse(e.data()['EndTime']),
-//           background: Colors.green,
-//           isAllDay: false))
-//       .toList();
-//     events = MeetingDataSource(list);
-// }
 
 Widget itemNote(BuildContext context, DocumentSnapshot document) {
   return Stack(children: [
     Padding(
       padding: const EdgeInsets.all(8.0),
+      // child: DecoratedBox(
+      //   decoration: BoxDecoration(color: Colors.transparent, boxShadow: [
+      //     BoxShadow(
+      //       color: Colors.black,
+      //       offset: Offset(0, 1),
+      //       spreadRadius: 10.0,
+      //       blurRadius: 50.0,
+      //     )
+      //   ]),
       child: Card(
           child: ExpansionTile(title: Text(document["Title"]), children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(
-                child: Center(child: Text(document["Content"])),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  child: Center(child: Text(document["Content"])),
+                ),
               ),
               Row(
                 children: [
@@ -277,7 +271,8 @@ Widget itemNote(BuildContext context, DocumentSnapshot document) {
                       padding: const EdgeInsets.all(4.0),
                       child: FloatingActionButton.small(
                           heroTag: document["Title"],
-                          child: const Icon(Icons.update, color: Colors.white),
+                          child: const Icon(Icons.mode_edit_outline,
+                              color: Colors.white),
                           onPressed: () {
                             Navigator.push(
                                 context,
@@ -308,6 +303,7 @@ Widget itemNote(BuildContext context, DocumentSnapshot document) {
           ),
         ),
       ])),
+      //   ),
     ),
   ]);
 }
@@ -340,9 +336,8 @@ Widget itemTask(BuildContext context, DocumentSnapshot document) {
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
+                child: Row(
                   children: [
-                    Text(isUrgent()),
                     Row(
                       children: [
                         Align(
@@ -351,7 +346,7 @@ Widget itemTask(BuildContext context, DocumentSnapshot document) {
                             padding: const EdgeInsets.all(4.0),
                             child: FloatingActionButton.small(
                                 heroTag: document.id,
-                                child: const Icon(Icons.update,
+                                child: const Icon(Icons.mode_edit_outline,
                                     color: Colors.white),
                                 onPressed: () {
                                   Navigator.push(
@@ -379,8 +374,44 @@ Widget itemTask(BuildContext context, DocumentSnapshot document) {
                                 }),
                           ),
                         ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: FloatingActionButton.small(
+                                heroTag: "taskSchedule",
+                                child: const Icon(Icons.calendar_today_outlined,
+                                    color: Colors.white),
+                                onPressed: () {
+                                  null;
+                                }),
+                          ),
+                        ),
                       ],
                     ),
+                    Spacer(),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.amber),
+                      onPressed: () {
+                        if (document["Urgent"] == "true") {
+                          FirebaseFirestore.instance
+                              .collection("Users")
+                              .doc('9QEH87DWCydbWuV2jpML')
+                              .collection("Content")
+                              .doc(document.id)
+                              .update({"Urgent": "false"});
+                        } else {
+                          FirebaseFirestore.instance
+                              .collection("Users")
+                              .doc('9QEH87DWCydbWuV2jpML')
+                              .collection("Content")
+                              .doc(document.id)
+                              .update({"Urgent": "true"});
+                        }
+                      },
+                      child: Text(isUrgent()),
+                    )
                   ],
                 ),
               ),
@@ -518,7 +549,7 @@ class _addTaskState extends State<addTask> {
   Widget build(BuildContext context) {
     var screen = MediaQuery.of(context).size;
     return AlertDialog(
-      title: const Text('Add Note'),
+      title: const Text('Add Task'),
       content: SizedBox(
         width: screen.width * .5,
         child: Stack(children: <Widget>[
