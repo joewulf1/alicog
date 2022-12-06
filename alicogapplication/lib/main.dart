@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
+MeetingDataSource? events;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -32,27 +34,26 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Meeting> _getDataSource() {
+    final List<Meeting> meetings = <Meeting>[];
+    final DateTime today = DateTime.now();
+    final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
+    final DateTime endTime = startTime.add(const Duration(hours: 2));
+    meetings.add(Meeting(
+        'Conference', startTime, endTime, const Color(0xFF0F8644), false));
+    return meetings;
+  }
+
   @override
   Widget build(BuildContext context) {
     var screen = MediaQuery.of(context).size;
     var widthScreen = screen.width;
     var heightScreen = screen.height;
-    List<Meeting> _getDataSource() {
-      final List<Meeting> meetings = <Meeting>[];
-      final DateTime today = DateTime.now();
-      final DateTime startTime =
-          DateTime(today.year, today.month, today.day, 9);
-      final DateTime endTime = startTime.add(const Duration(hours: 2));
-      meetings.add(Meeting(
-          'Conference', startTime, endTime, const Color(0xFF0F8644), false));
-      return meetings;
-    }
 
     return Scaffold(
         appBar: AppBar(
@@ -70,11 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: widthScreen * .33,
                       height: heightScreen * .80,
                       child: SfCalendar(
-                        view: CalendarView.month,
+                        view: CalendarView.day,
                         dataSource: MeetingDataSource(_getDataSource()),
-                        // by default the month appointment display mode set as Indicator, we can
-                        // change the display mode as appointment using the appointment display
-                        // mode property
                         monthViewSettings: const MonthViewSettings(
                             appointmentDisplayMode:
                                 MonthAppointmentDisplayMode.appointment),
@@ -175,26 +173,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Meeting {
-  /// Creates a meeting class with required details.
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
-
-  /// Event name which is equivalent to subject property of [Appointment].
-  String eventName;
-
-  /// From which is equivalent to start time property of [Appointment].
-  DateTime from;
-
-  /// To which is equivalent to end time property of [Appointment].
-  DateTime to;
-
-  /// Background which is equivalent to color property of [Appointment].
-  Color background;
-
-  /// IsAllDay which is equivalent to isAllDay property of [Appointment].
-  bool isAllDay;
-}
-
 class MeetingDataSource extends CalendarDataSource {
   /// Creates a meeting data source, which used to set the appointment
   /// collection to the calendar
@@ -237,6 +215,46 @@ class MeetingDataSource extends CalendarDataSource {
     return meetingData;
   }
 }
+
+/// Custom business object class which contains properties to hold the detailed
+/// information about the event data which will be rendered in calendar.
+class Meeting {
+  /// Creates a meeting class with required details.
+  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+
+  /// Event name which is equivalent to subject property of [Appointment].
+  String eventName;
+
+  /// From which is equivalent to start time property of [Appointment].
+  DateTime from;
+
+  /// To which is equivalent to end time property of [Appointment].
+  DateTime to;
+
+  /// Background which is equivalent to color property of [Appointment].
+  Color background;
+
+  /// IsAllDay which is equivalent to isAllDay property of [Appointment].
+  bool isAllDay;
+}
+// Future<void> getDataFromFireStore() async {
+//   var snapShotsValue = await FirebaseFirestore.instance
+//       .collection("Users")
+//       .doc("9QEH87DWCydbWuV2jpML")
+//       .collection("Content")
+//       .where("scheduled", isEqualTo: true)
+//       .get();
+
+//   List<Meeting> list = snapShotsValue.docs
+//       .map((e) => Meeting(
+//           eventName: e.data()['Subject'],
+//           from: DateFormat('dd/MM/yyyy HH:mm:ss').parse(e.data()['StartTime']),
+//           to: DateFormat('dd/MM/yyyy HH:mm:ss').parse(e.data()['EndTime']),
+//           background: Colors.green,
+//           isAllDay: false))
+//       .toList();
+//     events = MeetingDataSource(list);
+// }
 
 Widget itemNote(BuildContext context, DocumentSnapshot document) {
   return Stack(children: [
