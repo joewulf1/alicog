@@ -66,17 +66,32 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text("Calendar"),
-                  SizedBox(
-                      width: widthScreen * .33,
-                      height: heightScreen * .80,
-                      child: SfCalendar(
-                        view: CalendarView.day,
-                        dataSource: MeetingDataSource(_getDataSource()),
-                        monthViewSettings: const MonthViewSettings(
-                            appointmentDisplayMode:
-                                MonthAppointmentDisplayMode.appointment),
-                      )),
+                  Text(style: TextStyle(fontSize: 20), "Calendar"),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(4, 5),
+                              blurRadius: 2,
+                              color: Color.fromARGB(126, 96, 125, 139))
+                        ],
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        border: Border.all(
+                          color: Colors.blueGrey,
+                          width: 3,
+                        )),
+                    child: SizedBox(
+                        width: widthScreen * .30,
+                        height: heightScreen * .80,
+                        child: SfCalendar(
+                          view: CalendarView.day,
+                          dataSource: MeetingDataSource(_getDataSource()),
+                          monthViewSettings: const MonthViewSettings(
+                              appointmentDisplayMode:
+                                  MonthAppointmentDisplayMode.appointment),
+                        )),
+                  ),
                 ],
               ),
             ),
@@ -84,35 +99,49 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text("Tasks"),
-                  SizedBox(
-                    width: widthScreen * .33,
-                    height: heightScreen * .80,
-                    child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .where("isNote?", isEqualTo: false)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return Center(child: Loading());
-                          } else {
-                            return ListView.builder(
-                                itemCount: snapshot.data?.docs.length,
-                                itemBuilder: (context, index) => itemTask(
-                                    context, snapshot.data!.docs[index]));
-                          }
-                        }),
+                  Text(style: TextStyle(fontSize: 20), "Tasks"),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(4, 5),
+                              blurRadius: 2,
+                              color: Color.fromARGB(126, 96, 125, 139))
+                        ],
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        border: Border.all(
+                          color: Colors.blueGrey,
+                          width: 3,
+                        )),
+                    child: SizedBox(
+                      width: widthScreen * .30,
+                      height: heightScreen * .80,
+                      child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection("Users")
+                              .doc('9QEH87DWCydbWuV2jpML')
+                              .collection("Content")
+                              .where("isNote?", isEqualTo: false)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(child: Loading());
+                            } else {
+                              return ListView.builder(
+                                  itemCount: snapshot.data?.docs.length,
+                                  itemBuilder: (context, index) => itemTask(
+                                      context, snapshot.data!.docs[index]));
+                            }
+                          }),
+                    ),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: FloatingActionButton.small(
-                          heroTag: "taskAdd",
-                          child: const Icon(Icons.add, color: Colors.white),
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                          child: const Text("Add Task"),
                           onPressed: () {
                             Navigator.push(
                                 context,
@@ -128,35 +157,49 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text("Notes"),
-                  SizedBox(
-                    width: widthScreen * .28,
-                    height: heightScreen * .80,
-                    child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection("Users")
-                            .doc('9QEH87DWCydbWuV2jpML')
-                            .collection("Content")
-                            .where("isNote?", isEqualTo: true)
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return Center(child: Loading());
-                          } else {
-                            return ListView.builder(
-                                itemCount: snapshot.data?.docs.length,
-                                itemBuilder: (context, index) => itemNote(
-                                    context, snapshot.data!.docs[index]));
-                          }
-                        }),
+                  Text(style: TextStyle(fontSize: 20), "Notes"),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(4, 5),
+                              blurRadius: 2,
+                              color: Color.fromARGB(126, 96, 125, 139))
+                        ],
+                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                        border: Border.all(
+                          color: Colors.blueGrey,
+                          width: 3,
+                        )),
+                    child: SizedBox(
+                      width: widthScreen * .30,
+                      height: heightScreen * .80,
+                      child: StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection("Users")
+                              .doc('9QEH87DWCydbWuV2jpML')
+                              .collection("Content")
+                              .where("isNote?", isEqualTo: true)
+                              .snapshots(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(child: Loading());
+                            } else {
+                              return ListView.builder(
+                                  itemCount: snapshot.data?.docs.length,
+                                  itemBuilder: (context, index) => itemNote(
+                                      context, snapshot.data!.docs[index]));
+                            }
+                          }),
+                    ),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: FloatingActionButton.small(
-                          heroTag: "itemAdd",
-                          child: const Icon(Icons.add, color: Colors.white),
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                          child: const Text("Add Note"),
                           onPressed: () {
                             Navigator.push(
                                 context,
@@ -310,6 +353,7 @@ Widget itemNote(BuildContext context, DocumentSnapshot document) {
 
 Widget itemTask(BuildContext context, DocumentSnapshot document) {
   String urgentMessage = "";
+  Color urgentColor = Color.fromARGB(144, 110, 184, 25);
   String isUrgent() {
     if (document["Urgent"] == "true") {
       urgentMessage = "This is urgent!";
@@ -317,6 +361,16 @@ Widget itemTask(BuildContext context, DocumentSnapshot document) {
     } else {
       urgentMessage = "This is not urgent.";
       return urgentMessage;
+    }
+  }
+
+  Color urgentButton() {
+    if (document["Urgent"] == "true") {
+      urgentColor = Color.fromARGB(255, 227, 29, 29);
+      return urgentColor;
+    } else {
+      urgentColor = Color.fromARGB(144, 110, 184, 25);
+      return urgentColor;
     }
   }
 
@@ -340,59 +394,55 @@ Widget itemTask(BuildContext context, DocumentSnapshot document) {
                   children: [
                     Row(
                       children: [
-                        Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: FloatingActionButton.small(
-                                heroTag: document.id,
-                                child: const Icon(Icons.mode_edit_outline,
-                                    color: Colors.white),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => updateTask(
-                                                choiceID: document.id,
-                                                title: document["Title"],
-                                                content: document["Content"],
-                                                urgent: document["Urgent"],
-                                              )));
-                                }),
-                          ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: FloatingActionButton.small(
+                              heroTag: document.id,
+                              child: const Icon(Icons.mode_edit_outline,
+                                  color: Colors.white),
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => updateTask(
+                                              choiceID: document.id,
+                                              title: document["Title"],
+                                              content: document["Content"],
+                                              urgent: document["Urgent"],
+                                            )));
+                              }),
                         ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: FloatingActionButton.small(
-                                heroTag: "taskDeletion",
-                                child: const Icon(Icons.delete,
-                                    color: Colors.white),
-                                onPressed: () {
-                                  delItem(document.id);
-                                }),
-                          ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: FloatingActionButton.small(
+                              heroTag: document.id + "taskDeletion",
+                              child:
+                                  const Icon(Icons.delete, color: Colors.white),
+                              onPressed: () {
+                                delItem(document.id);
+                              }),
                         ),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: FloatingActionButton.small(
-                                heroTag: "taskSchedule",
-                                child: const Icon(Icons.calendar_today_outlined,
-                                    color: Colors.white),
-                                onPressed: () {
-                                  null;
-                                }),
-                          ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: FloatingActionButton.small(
+                              heroTag: document.id + "taskSchedule",
+                              child: const Icon(Icons.calendar_today_outlined,
+                                  color: Colors.white),
+                              onPressed: () {
+                                scheduleTask(
+                                  document.id,
+                                  document["Title"],
+                                  document["Content"],
+                                  document["Urgent"],
+                                );
+                              }),
                         ),
                       ],
                     ),
                     Spacer(),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber),
+                          backgroundColor: urgentButton()),
                       onPressed: () {
                         if (document["Urgent"] == "true") {
                           FirebaseFirestore.instance
@@ -950,4 +1000,26 @@ class _updateTaskState extends State<updateTask> {
       ),
     );
   }
+}
+
+void scheduleTask(String docID, title, content, urgent) {
+  FirebaseFirestore.instance
+      .collection("Users")
+      .doc("9QEH87DWCydbWuV2jpML")
+      .collection("Scheduled")
+      .doc(docID)
+      .set({
+    "Title": title,
+    "Content": content,
+    "Urgent": urgent,
+    "Start": DateTime.now(),
+    "End": DateTime.now(),
+  });
+
+  FirebaseFirestore.instance
+      .collection("Users")
+      .doc("9QEH87DWCydbWuV2jpML")
+      .collection("Content")
+      .doc(docID)
+      .delete();
 }
