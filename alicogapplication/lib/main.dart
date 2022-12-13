@@ -5,8 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-MeetingDataSource? events;
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -39,14 +37,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Meeting> _getDataSource() {
-    final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-    meetings.add(Meeting(
-        'Conference', startTime, endTime, const Color(0xFF0F8644), false));
-    return meetings;
+  MeetingDataSource? events;
+
+  Future<void> getDataFromFireStore() async {
+    var snapShotsValue = await FirebaseFirestore.instance
+        .collection("Users")
+        .doc("9QEH87DWCydbWuV2jpML")
+        .collection("Scheduled")
+        .get();
+
+    List<Meeting> list = snapShotsValue.docs
+        .map((e) => Meeting(
+            eventName: e.data()['Title'],
+            from: (e.data()['Start']).toDate(),
+            to: (e.data()['End']).toDate(),
+            background: Colors.amber,
+            isAllDay: false,
+            key: e.id))
+        .toList();
+    setState(() {
+      events = MeetingDataSource(list);
+    });
   }
 
   @override
@@ -54,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var screen = MediaQuery.of(context).size;
     var widthScreen = screen.width;
     var heightScreen = screen.height;
+    getDataFromFireStore();
 
     return Scaffold(
         appBar: AppBar(
@@ -86,8 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         height: heightScreen * .80,
                         child: SfCalendar(
                           view: CalendarView.day,
-                          dataSource: MeetingDataSource(_getDataSource()),
-                          monthViewSettings: const MonthViewSettings(
+                          dataSource: events,
+                          monthViewSettings: MonthViewSettings(
                               appointmentDisplayMode:
                                   MonthAppointmentDisplayMode.appointment),
                         )),
@@ -217,83 +229,67 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class MeetingDataSource extends CalendarDataSource {
-  /// Creates a meeting data source, which used to set the appointment
-  /// collection to the calendar
   MeetingDataSource(List<Meeting> source) {
     appointments = source;
   }
 
   @override
   DateTime getStartTime(int index) {
-    return _getMeetingData(index).from;
+    return appointments![index].from;
   }
 
   @override
   DateTime getEndTime(int index) {
-    return _getMeetingData(index).to;
-  }
-
-  @override
-  String getSubject(int index) {
-    return _getMeetingData(index).eventName;
-  }
-
-  @override
-  Color getColor(int index) {
-    return _getMeetingData(index).background;
+    return appointments![index].to;
   }
 
   @override
   bool isAllDay(int index) {
-    return _getMeetingData(index).isAllDay;
+    return appointments![index].isAllDay;
   }
 
-  Meeting _getMeetingData(int index) {
-    final dynamic meeting = appointments![index];
-    late final Meeting meetingData;
-    if (meeting is Meeting) {
-      meetingData = meeting;
-    }
+  @override
+  String getSubject(int index) {
+    return appointments![index].eventName;
+  }
 
-    return meetingData;
+  @override
+  Color getColor(int index) {
+    return appointments![index].background;
   }
 }
 
-/// Custom business object class which contains properties to hold the detailed
-/// information about the event data which will be rendered in calendar.
 class Meeting {
-  /// Creates a meeting class with required details.
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+  String? eventName;
+  DateTime? from;
+  DateTime? to;
+  Color? background;
+  bool? isAllDay;
+  String? key;
 
-  /// Event name which is equivalent to subject property of [Appointment].
-  String eventName;
+  Meeting(
+      {this.eventName,
+      this.from,
+      this.to,
+      this.background,
+      this.isAllDay,
+      this.key});
 
-  /// From which is equivalent to start time property of [Appointment].
-  DateTime from;
-
-  /// To which is equivalent to end time property of [Appointment].
-  DateTime to;
-
-  /// Background which is equivalent to color property of [Appointment].
-  Color background;
-
-  /// IsAllDay which is equivalent to isAllDay property of [Appointment].
-  bool isAllDay;
+  static Meeting fromFireBaseSnapShotData(dynamic element, Color color) {
+    return Meeting(
+        eventName: element.doc.data()!['Title'],
+        from: (element.doc.data()!['Start']).toDate(),
+        to: (element.doc.data()!['End']).toDate(),
+        background: color,
+        isAllDay: false,
+        key: element.doc.id);
+  }
 }
 
 Widget itemNote(BuildContext context, DocumentSnapshot document) {
   return Stack(children: [
     Padding(
       padding: const EdgeInsets.all(8.0),
-      // child: DecoratedBox(
-      //   decoration: BoxDecoration(color: Colors.transparent, boxShadow: [
-      //     BoxShadow(
-      //       color: Colors.black,
-      //       offset: Offset(0, 1),
-      //       spreadRadius: 10.0,
-      //       blurRadius: 50.0,
-      //     )
-      //   ]),
       child: Card(
           child: ExpansionTile(title: Text(document["Title"]), children: [
         Padding(
@@ -354,6 +350,7 @@ Widget itemNote(BuildContext context, DocumentSnapshot document) {
 Widget itemTask(BuildContext context, DocumentSnapshot document) {
   String urgentMessage = "";
   Color urgentColor = Color.fromARGB(144, 110, 184, 25);
+
   String isUrgent() {
     if (document["Urgent"] == "true") {
       urgentMessage = "This is urgent!";
